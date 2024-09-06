@@ -1,2 +1,10 @@
-# Ignore all .mp4 files
+# Ignore all .mp4 files, zip, executives and no extension
 *.mp4
+*.exe
+*.[!a-zA-Z]*
+*.zip
+*.spec
+
+# Ignore subfolders
+build/
+dist/

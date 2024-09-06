@@ -5,30 +5,32 @@ import csv
 import time
 import numpy as np
 import tkinter as tk
-from tkinter import filedialog, messagebox
+from tkinter import filedialog
 
-def select_input_source():
-    if input_source_var.get() == "file":
-        file_path = filedialog.askopenfilename(filetypes=[("Video Files", "*.mp4;*.avi;*.mov")])
-        if file_path:
-            video_path_entry.delete(0, tk.END)
-            video_path_entry.insert(0, file_path)
-    elif input_source_var.get() == "rtmp":
-        url = video_path_entry.get()
-        if url:
-            video_path_entry.delete(0, tk.END)
-            video_path_entry.insert(0, url)
+# Function to open file dialog and set video path
+def select_video_file():
+    file_path = filedialog.askopenfilename(filetypes=[("Video Files", "*.mp4;*.avi;*.mov")])
+    if file_path:
+        video_path_entry.delete(0, tk.END)
+        video_path_entry.insert(0, file_path)
 
-def toggle_rtmp_entry(*args):
-    if input_source_var.get() == "file":
-        rtmp_url_entry.pack_forget()
-    elif input_source_var.get() == "rtmp":
-        rtmp_url_entry.pack(side=tk.LEFT, padx=(0, 10))
+# Create main tkinter window
+root = tk.Tk()
+root.title("Video Path Input")
 
+# Create a label and entry widget for video path
+tk.Label(root, text="Video Path:").pack(pady=10)
+video_path_entry = tk.Entry(root, width=50)
+video_path_entry.pack(pady=5)
+
+# Create a button to open file dialog
+tk.Button(root, text="Browse", command=select_video_file).pack(pady=10)
+
+# Create a button to start processing
 def start_processing():
     video_path = video_path_entry.get()
     if not video_path:
-        tk.messagebox.showwarning("Warning", "Please select a video file or enter RTMP URL.")
+        tk.messagebox.showwarning("Warning", "Please select a video file.")
         return
     root.destroy()  # Close the tkinter window
 
@@ -63,6 +65,7 @@ def start_processing():
 
         # Initialize reverse timer variables
         max_time_seconds = 20 * 60  # Assuming the timer counts up to 20:00
+
         start_time = time.time()
         last_time_read = None
 
@@ -133,36 +136,8 @@ def start_processing():
         cap.release()
         cv2.destroyAllWindows()
 
-# Create main tkinter window
-root = tk.Tk()
-root.title("Video or RTMP URL Selector")
-
-# Create a frame for the widgets
-frame = tk.Frame(root, padx=10, pady=10)
-frame.pack(padx=10, pady=10)
-
-# Variable to hold the selected input source
-input_source_var = tk.StringVar(value="file")
-
-# Create radio buttons for selecting input source
-file_radio = tk.Radiobutton(frame, text="Select Video File", variable=input_source_var, value="file", command=toggle_rtmp_entry)
-file_radio.pack(anchor=tk.W)
-rtmp_radio = tk.Radiobutton(frame, text="Enter RTMP URL", variable=input_source_var, value="rtmp", command=toggle_rtmp_entry)
-rtmp_radio.pack(anchor=tk.W)
-
-# Create an entry widget to display the selected video file path or RTMP URL
-video_path_entry = tk.Entry(frame, width=50)
-video_path_entry.pack(side=tk.LEFT, padx=(0, 10))
-
-# Create an additional entry widget for RTMP URL
-rtmp_url_entry = tk.Entry(frame, width=50)
-
-# Create a button to select video file or enter RTMP URL
-select_button = tk.Button(frame, text="Select Input Source", command=select_input_source)
-select_button.pack(side=tk.LEFT)
-
 # Create a button to start processing
-tk.Button(frame, text="Start Processing", command=start_processing).pack(pady=10)
+tk.Button(root, text="Start Processing", command=start_processing).pack(pady=10)
 
-# Start the tkinter event loop
+# Run the tkinter main loop
 root.mainloop()

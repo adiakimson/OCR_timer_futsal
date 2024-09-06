@@ -1,0 +1,3 @@
+pip install pyinstaller
+pyinstaller -onefile futsal_timer_test_app.pyinstaller
+run exe
